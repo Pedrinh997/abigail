@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "abigail"
+version = "1.0.0"
+description = "AI Assistant with Gemini"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Seu Nome", email = "seu.email@example.com"},
+]
+dependencies = [
+    "gradio>=6.0.0",
+    "google-genai>=1.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/seu-usuario/abigail"
+Repository = "https://github.com/seu-usuario/abigail.git"
+
+[tool.black]
+line-length = 120
+target-version = ['py310']

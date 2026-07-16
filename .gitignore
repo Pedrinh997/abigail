@@ -1,0 +1,41 @@
+# Environment
+.env
+.env.local
+
+# Local data
+history/
+trash/
+config.json
+*.log
+*.bak
+*.corrupted
+
+# Python
+venv/
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.egg-info/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+
+# Gradio
+gradio_cached_examples/
