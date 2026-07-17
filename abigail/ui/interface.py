@@ -42,7 +42,11 @@ class UI:
             # ---- Main layout ----
             with gr.Row():
                 with gr.Column(scale=3):
-                    chatbot = gr.Chatbot(label="Abigail", height=self.config.get("chat_height"))
+                    chatbot = gr.Chatbot(
+                        label="Abigail",
+                        height=self.config.get("chat_height"),
+                        type="tuples"   # 🔥 ESSENCIAL para usar o formato de tuplas
+                    )
                 with gr.Column(scale=1):
                     with gr.Accordion(self.texts["settings_label"], open=False):
                         pers_choices = [(self.texts["personality_names"][k], k) for k in PromptBuilder.PERSONALITIES.keys()]
@@ -527,7 +531,7 @@ class UI:
             return -1
 
     # ======================================================================
-    # LAUNCH – tema fixo claro
+    # LAUNCH
     # ======================================================================
     def launch(self, **kwargs) -> None:
         if self.demo is None:
