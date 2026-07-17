@@ -31,6 +31,18 @@ class UI:
         self.demo: Optional[gr.Blocks] = None
         self._build()
 
+    # ======================================================================
+    # HELPERS
+    # ======================================================================
+    def _to_messages(self, history: List[Tuple[str, str]]) -> List[Dict[str, str]]:
+        """Convert tuple history to Gradio message format."""
+        messages = []
+        for user, bot in history:
+            messages.append({"role": "user", "content": user})
+            if bot:
+                messages.append({"role": "assistant", "content": bot})
+        return messages
+
     def _build(self) -> None:
         with gr.Blocks() as self.demo:
             cfg_state = gr.State(self.config.to_dict())
@@ -42,11 +54,7 @@ class UI:
             # ---- Main layout ----
             with gr.Row():
                 with gr.Column(scale=3):
-                    chatbot = gr.Chatbot(
-                        label="Abigail",
-                        height=self.config.get("chat_height"),
-                        type="tuples"   # 🔥 ESSENCIAL para usar o formato de tuplas
-                    )
+                    chatbot = gr.Chatbot(label="Abigail", height=self.config.get("chat_height"))
                 with gr.Column(scale=1):
                     with gr.Accordion(self.texts["settings_label"], open=False):
                         pers_choices = [(self.texts["personality_names"][k], k) for k in PromptBuilder.PERSONALITIES.keys()]
@@ -324,7 +332,9 @@ class UI:
             status_msg_update = f"Response ({len(history)} msgs)"
             progress(1.0, desc="Complete")
 
-        return ("", history, gr.update(value=history),
+        # Converter history para mensagens antes de atualizar o chatbot
+        messages = self._to_messages(history)
+        return ("", history, gr.update(value=messages),
                 gr.update(choices=opts, value=[]),
                 gr.update(value=status_msg_update), send_update)
 
@@ -336,7 +346,8 @@ class UI:
             return [], gr.update(), gr.update(choices=[]), f"Error: {err}", gr.update(), gr.update()
         self.repo.save_current(history)
         opts = self._message_options(history)
-        return (history, gr.update(value=history), gr.update(choices=opts, value=[]),
+        messages = self._to_messages(history)
+        return (history, gr.update(value=messages), gr.update(choices=opts, value=[]),
                 f"Loaded {fname}", gr.update(choices=self.repo.list_snapshots()),
                 gr.update(choices=self.repo.list_trash()))
 
@@ -402,7 +413,8 @@ class UI:
                 del history[i]
         self.repo.save_current(history)
         opts = self._message_options(history)
-        return history, gr.update(choices=opts, value=[]), gr.update(value=history), f"{len(indices)} messages deleted"
+        messages = self._to_messages(history)
+        return history, gr.update(choices=opts, value=[]), gr.update(value=messages), f"{len(indices)} messages deleted"
 
     def _on_new_conversation(self):
         self.repo.save_current([])
@@ -518,7 +530,8 @@ class UI:
         if err:
             return history, gr.update(value=history), gr.update(choices=[]), f"Error: {err}"
         opts = self._message_options(history)
-        return history, gr.update(value=history), gr.update(choices=opts), f"Loaded {len(history)} messages"
+        messages = self._to_messages(history)
+        return history, gr.update(value=messages), gr.update(choices=opts), f"Loaded {len(history)} messages"
 
     def _message_options(self, history: List[Tuple[str, str]]) -> List[str]:
         limited = history[-50:] if len(history) > 50 else history
